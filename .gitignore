@@ -1,0 +1,11 @@
+# linux tmp files
+*~
+
+# pycharm?
+*/.idea/*
+*/*/.idea/*
+.idea/*
+
+# pyc files
+*.pyc
+

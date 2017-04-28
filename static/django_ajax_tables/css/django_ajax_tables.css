@@ -1,0 +1,136 @@
+.django_table th {
+  text-align: center;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.django_table th.sortable {
+  cursor: pointer;
+}
+.django_table th.sortable .sort-indicator {
+  padding-right: 18px;
+  position: relative;
+}
+.django_table th.sortable .sort-indicator:after,
+.django_table th.sortable .sort-indicator:before {
+  content: "";
+  border-width: 0 4px 4px;
+  border-style: solid;
+  border-color: #000 transparent;
+  visibility: visible;
+  right: 5px;
+  top: 50%;
+  position: absolute;
+  opacity: .3;
+  margin-top: -4px;
+}
+.django_table th.sortable .sort-indicator:before {
+  margin-top: 2px;
+  border-bottom: none;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #000;
+}
+.django_table th.sortable .sort-indicator:hover:after,
+.django_table th.sortable .sort-indicator:hover:before {
+  opacity: 1;
+  visibility: visible;
+}
+.django_table th.sortable.sort-desc,
+.django_table th.sortable.sort-asc {
+  background-color: rgba(141, 192, 219, 0.25);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+.django_table th.sortable.sort-desc .sort-indicator:after,
+.django_table th.sortable.sort-asc .sort-indicator:after {
+  margin-top: -2px;
+}
+.django_table th.sortable.sort-desc .sort-indicator:before,
+.django_table th.sortable.sort-asc .sort-indicator:before {
+  visibility: hidden;
+}
+.django_table th.sortable.sort-asc .sort-indicator:after,
+.django_table th.sortable.sort-asc .sort-indicator:hover:after {
+  visibility: visible;
+  filter: alpha(opacity=60);
+  -khtml-opacity: 0.6;
+  -moz-opacity: 0.6;
+  opacity: 0.6;
+}
+.django_table th.sortable.sort-desc .sort-indicator:after {
+  border-bottom: none;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #000;
+  visibility: visible;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  filter: alpha(opacity=60);
+  -khtml-opacity: 0.6;
+  -moz-opacity: 0.6;
+  opacity: 0.6;
+}
+.django_table th.filter .input-filter {
+  margin: 0;
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.django_table + .pagination {
+  margin-top: 0;
+}
+@media only screen and (max-width: 800px) {
+  .django_table-responsive {
+    border-bottom: 1px solid #999999;
+  }
+  .django_table-responsive tr {
+    border-top: 1px solid #999999;
+    border-left: 1px solid #999999;
+    border-right: 1px solid #999999;
+  }
+  .django_table-responsive td:before {
+    position: absolute;
+    padding: 8px;
+    left: 0;
+    top: 0;
+    width: 50%;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
+  .django_table-responsive thead tr th {
+    text-align: left;
+  }
+  .django_table-responsive thead tr.django_table-filters th {
+    padding: 0;
+  }
+  .django_table-responsive thead tr.django_table-filters th form > div {
+    padding: 8px;
+  }
+  .django_table-responsive td {
+    border: none;
+    border-bottom: 1px solid #eeeeee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+  .django_table-responsive td:before {
+    content: attr(data-title-text);
+  }
+  .django_table-responsive,
+  .django_table-responsive thead,
+  .django_table-responsive tbody,
+  .django_table-responsive th,
+  .django_table-responsive td,
+  .django_table-responsive tr {
+    display: block;
+  }
+}

@@ -1,0 +1,109 @@
+{# template apki do ładnych konfigurowalnych, w pythonie na podstawie modelu dynamicznych tabelek #}
+{% load staticfiles %}
+{% load static %}
+{% load sekizai_tags %}
+
+{% addtoblock "js" %}
+    <script src="{% static 'django_ajax_tables/js/django_ajax_tables_app.js' %}"></script>
+    <script>
+        angular.bootstrap(django_ajax_table, ['djangoAjaxTablesApp']);
+    </script>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'django_ajax_tables/css/django_ajax_tables.css' %}"/>
+{% endaddtoblock %}
+
+<div class="row" id="django_ajax_table" ng-controller="djangoAjaxTablesController" ng-init="init({{ ng_init }})">
+    {{ additional_before_table|safe }}
+    <div ng-if="rows.length == 0">
+        {{ empty_table|safe }}
+    </div>
+    <p>
+        {% if selectable_rows %}
+            <input type="checkbox" ng-model="check_all_value" ng-click="check_all(check_all_value)" class="{{ select_row_checkbox_classes }} pull-right" /> &nbsp;
+        {% endif %}
+        {% for action in table_actions %}
+            <span ng-click="action('{{ action.action_id}}', '{{ action.are_you_sure_question }}')">{{ action.html|safe }}</span>
+        {% endfor %}
+    </p>
+    <table class="djagno_ajax_table table ng-table">
+        <thead>
+            <tr>
+                {% for column in columns %}
+                    <th title="{{ column.title }}"
+                        {% if column.sortable %}
+                            {# ng-class="{ 'sortable': 1 {{ column.sortable_js }}, 'sort-asc': params.sorting()[$column.sortable(this)]=='asc', 'sort-desc': params.sorting()[$column.sortable(this)]=='desc' }"  #}
+                            {# ng-click="sortBy({{ column.id }}, $event)" #}
+                            ng-class="{ 'sortable': {{ column.sortable_js }}, 'sort-asc': ordered_by == '{{ column.model_field_name }}', 'sort-desc': ordered_by == '-{{ column.model_field_name }}' }"
+                            ng-click="order_by_func('{{ column.model_field_name }}')"
+                        {% endif %}
+                        class="header {{ column.header_classes }}">
+                        <div class="ng-table-header">
+                            <span class="{{ column.span_classes }} {% if column.sortable %} sort-indicator {% endif %}">{{ column.title }}</span>
+                        </div>
+                    </th>
+                {% endfor %}
+                {% if row_actions %}
+                    <th title="Akcje">Akcje</th>
+                {% endif %}
+                {% if selectable_rows %}
+                    <th>&nbsp</th>
+                {% endif %}
+            </tr>
+            {% if columns_filters %}
+                <tr class="ng-table-filters">
+                    {% for column in columns %}
+                        <th>
+                            {% if column.filterable %}
+                            <span>
+                                <input type="text" name="{{ column.model_field_name }}_filter" ng-change="get_page()" ng-model="filter['{{ column.model_field_name }}_filter']" class="input-filter form-control"/>
+                            </span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                    {% if selectable_rows %}
+                        <th>&nbsp</th>
+                    {% endif %}
+                </tr>
+            {% endif %}
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="row in rows"
+                ng-class="{{ row_ng_classes }}">
+
+                <td ng-repeat="column in row.content">
+                    {$ column $}
+                </td>
+                {% if row_actions %}
+                    <td>
+                        {% for action in row_actions %}
+                            <span ng-click="action('{{ action.action_id}}', '{{ action.are_you_sure_question }}', row.model_id)">{{ action.html|safe }}</span>
+                        {% endfor %}
+                    </td>
+                {% endif %}
+                {% if selectable_rows %}
+                    <td>
+                        <input type="checkbox" class="{{ select_row_checkbox_classes }}" ng-click="check_single(row.checked)" ng-model="row.checked">
+                    </td>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+    <div class="ng-cloak ng-table-pager" ng-if="max_pages > 1">
+        <ul class="pagination ng-table-pagination">
+            <li ng-class="{ 'disabled': page == 1 }">
+                <a ng-click="previous_page()" href="">&laquo;</a>
+            </li>
+            <li ng-class="{ 'disabled': page_id == '...', 'active': page == page_id }"
+                ng-repeat="page_id in [] | range:max_pages">
+                <a ng-click="page_number(page_id)" href="">{$ page_id $}</a>
+            </li>
+            <li ng-class="{ 'disabled': page == max_pages }">
+                <a ng-click="next_page()" href="">&raquo;</a>
+            </li>
+        </ul>
+    </div>
+    {{ additional_after_table|safe }}
+</div>
