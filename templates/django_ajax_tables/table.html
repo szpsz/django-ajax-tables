@@ -5,6 +5,9 @@
 
 {% addtoblock "js" %}
     <script src="{% static 'django_ajax_tables/js/django_ajax_tables_app.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
     <script>
         angular.bootstrap(django_ajax_table, ['djangoAjaxTablesApp']);
     </script>
@@ -27,7 +30,7 @@
             <span ng-click="action('{{ action.action_id}}', '{{ action.are_you_sure_question }}')">{{ action.html|safe }}</span>
         {% endfor %}
     </p>
-    <table class="djagno_ajax_table table ng-table">
+    <table class="table django-ajax-table">
         <thead>
             <tr>
                 {% for column in columns %}
@@ -97,7 +100,7 @@
                 <a ng-click="previous_page()" href="">&laquo;</a>
             </li>
             <li ng-class="{ 'disabled': page_id == '...', 'active': page == page_id }"
-                ng-repeat="page_id in [] | range:max_pages">
+                ng-repeat="page_id in [] | range:max_pages:page track by $index">
                 <a ng-click="page_number(page_id)" href="">{$ page_id $}</a>
             </li>
             <li ng-class="{ 'disabled': page == max_pages }">

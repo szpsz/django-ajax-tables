@@ -23,15 +23,31 @@ djangoAjaxTablesApp.factory('djangoAjaxTablesService', function($http){
 });
 
 djangoAjaxTablesApp.filter('range', function() {
-  return function(input, total) {
-    var total = parseInt(total) + 1;
+    return function(output, total, current) {
+        var total = parseInt(total) + 1;
 
-    for (var i=1; i<total; i++) {
-      input.push(i);
-    }
+        for (var i=1; i<total; i++) {  //probably might be written better...
+            if ((i < 4) || (i > total - 2)){
+                output.push(i);
+            }
+            else if ((i > current - 2) && (i < current + 2)){
+                output.push(i);
+            }
+            else if (i == 4){
+                output.push('...');
+            }
+            if ((i == current + 2) && (current + 3 < total) && (i > 4)){
+                if (i == total - 2){
+                    output.push(total - 2);
+                }
+                else{
+                    output.push('...');
+                }
+            }
+        }
 
-    return input;
-  };
+        return output;
+    };
 });
 
 djangoAjaxTablesApp.controller('djangoAjaxTablesController', function ($scope, djangoAjaxTablesService) {

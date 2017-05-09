@@ -56,3 +56,16 @@ class RedirectWithIdAction(DjangoAjaxTableAction):
 
     def function(self, request):
         return 'window.location.href = "%s/"+model_id;' % self.url
+
+
+class HtmlOnlyAction(DjangoAjaxTableAction):
+    def __init__(self,
+                 html,
+                 security_function=lambda r: None,
+                 render_template=False,
+                 show_condition=''
+                 ):
+        super(self.__class__, self).__init__(html, lambda r: None, security_function, render_template, '', show_condition)
+
+    def function(self, request):
+        return None

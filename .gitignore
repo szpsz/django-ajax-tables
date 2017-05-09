@@ -9,3 +9,6 @@
 # pyc files
 *.pyc
 
+# pypi dist files
+dist
+django_ajax_tables.egg-info

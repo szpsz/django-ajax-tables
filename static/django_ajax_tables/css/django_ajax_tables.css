@@ -1,4 +1,4 @@
-.django_table th {
+.django-ajax-table th {
   text-align: center;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -7,15 +7,15 @@
   -ms-user-select: none;
   user-select: none;
 }
-.django_table th.sortable {
+.django-ajax-table th.sortable {
   cursor: pointer;
 }
-.django_table th.sortable .sort-indicator {
+.django-ajax-table th.sortable .sort-indicator {
   padding-right: 18px;
   position: relative;
 }
-.django_table th.sortable .sort-indicator:after,
-.django_table th.sortable .sort-indicator:before {
+.django-ajax-table th.sortable .sort-indicator:after,
+.django-ajax-table th.sortable .sort-indicator:before {
   content: "";
   border-width: 0 4px 4px;
   border-style: solid;
@@ -27,40 +27,40 @@
   opacity: .3;
   margin-top: -4px;
 }
-.django_table th.sortable .sort-indicator:before {
+.django-ajax-table th.sortable .sort-indicator:before {
   margin-top: 2px;
   border-bottom: none;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-top: 4px solid #000;
 }
-.django_table th.sortable .sort-indicator:hover:after,
-.django_table th.sortable .sort-indicator:hover:before {
+.django-ajax-table th.sortable .sort-indicator:hover:after,
+.django-ajax-table th.sortable .sort-indicator:hover:before {
   opacity: 1;
   visibility: visible;
 }
-.django_table th.sortable.sort-desc,
-.django_table th.sortable.sort-asc {
+.django-ajax-table th.sortable.sort-desc,
+.django-ajax-table th.sortable.sort-asc {
   background-color: rgba(141, 192, 219, 0.25);
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
 }
-.django_table th.sortable.sort-desc .sort-indicator:after,
-.django_table th.sortable.sort-asc .sort-indicator:after {
+.django-ajax-table th.sortable.sort-desc .sort-indicator:after,
+.django-ajax-table th.sortable.sort-asc .sort-indicator:after {
   margin-top: -2px;
 }
-.django_table th.sortable.sort-desc .sort-indicator:before,
-.django_table th.sortable.sort-asc .sort-indicator:before {
+.django-ajax-table th.sortable.sort-desc .sort-indicator:before,
+.django-ajax-table th.sortable.sort-asc .sort-indicator:before {
   visibility: hidden;
 }
-.django_table th.sortable.sort-asc .sort-indicator:after,
-.django_table th.sortable.sort-asc .sort-indicator:hover:after {
+.django-ajax-table th.sortable.sort-asc .sort-indicator:after,
+.django-ajax-table th.sortable.sort-asc .sort-indicator:hover:after {
   visibility: visible;
   filter: alpha(opacity=60);
   -khtml-opacity: 0.6;
   -moz-opacity: 0.6;
   opacity: 0.6;
 }
-.django_table th.sortable.sort-desc .sort-indicator:after {
+.django-ajax-table th.sortable.sort-desc .sort-indicator:after {
   border-bottom: none;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
@@ -74,7 +74,7 @@
   -moz-opacity: 0.6;
   opacity: 0.6;
 }
-.django_table th.filter .input-filter {
+.django-ajax-table th.filter .input-filter {
   margin: 0;
   display: block;
   width: 100%;
@@ -83,19 +83,19 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.django_table + .pagination {
+.django-ajax-table + .pagination {
   margin-top: 0;
 }
 @media only screen and (max-width: 800px) {
-  .django_table-responsive {
+  .django-ajax-table-responsive {
     border-bottom: 1px solid #999999;
   }
-  .django_table-responsive tr {
+  .django-ajax-table-responsive tr {
     border-top: 1px solid #999999;
     border-left: 1px solid #999999;
     border-right: 1px solid #999999;
   }
-  .django_table-responsive td:before {
+  .django-ajax-table-responsive td:before {
     position: absolute;
     padding: 8px;
     left: 0;
@@ -105,16 +105,16 @@
     text-align: left;
     font-weight: bold;
   }
-  .django_table-responsive thead tr th {
+  .django-ajax-table-responsive thead tr th {
     text-align: left;
   }
-  .django_table-responsive thead tr.django_table-filters th {
+  .django-ajax-table-responsive thead tr.django-ajax-table-filters th {
     padding: 0;
   }
-  .django_table-responsive thead tr.django_table-filters th form > div {
+  .django-ajax-table-responsive thead tr.django-ajax-table-filters th form > div {
     padding: 8px;
   }
-  .django_table-responsive td {
+  .django-ajax-table-responsive td {
     border: none;
     border-bottom: 1px solid #eeeeee;
     position: relative;
@@ -122,15 +122,15 @@
     white-space: normal;
     text-align: left;
   }
-  .django_table-responsive td:before {
+  .django-ajax-table-responsive td:before {
     content: attr(data-title-text);
   }
-  .django_table-responsive,
-  .django_table-responsive thead,
-  .django_table-responsive tbody,
-  .django_table-responsive th,
-  .django_table-responsive td,
-  .django_table-responsive tr {
+  .django-ajax-table-responsive,
+  .django-ajax-table-responsive thead,
+  .django-ajax-table-responsive tbody,
+  .django-ajax-table-responsive th,
+  .django-ajax-table-responsive td,
+  .django-ajax-table-responsive tr {
     display: block;
   }
 }
