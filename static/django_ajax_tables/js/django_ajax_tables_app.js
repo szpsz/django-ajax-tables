@@ -26,23 +26,27 @@ djangoAjaxTablesApp.filter('range', function() {
     return function(output, total, current) {
         var total = parseInt(total) + 1;
 
-        for (var i=1; i<total; i++) {  //probably might be written better...
-            if ((i < 4) || (i > total - 2)){
+        for (var i=1; i<total; i++) {  //probably might be written more pithy...
+            if (i < 4){
+                output.push(i);
+            }
+            else if (i > total - 2){
                 output.push(i);
             }
             else if ((i > current - 2) && (i < current + 2)){
                 output.push(i);
             }
+            else if ((i == 4) && (current == 6)){
+                output.push(i);
+            }
             else if (i == 4){
                 output.push('...');
             }
-            if ((i == current + 2) && (current + 3 < total) && (i > 4)){
-                if (i == total - 2){
-                    output.push(total - 2);
-                }
-                else{
-                    output.push('...');
-                }
+            else if ((i == total - 2) && (current == total - 4)){
+                output.push(i);
+            }
+            else if ((i == total - 2) && (current > 2)){
+                output.push('...');
             }
         }
 
@@ -68,6 +72,7 @@ djangoAjaxTablesApp.controller('djangoAjaxTablesController', function ($scope, d
         }
 
         djangoAjaxTablesService.getRows(page_data).success(function(new_data) {
+            console.log(new_data['rows']);
             $scope.rows = new_data['rows'];
             $scope.page = new_data['page'];
             $scope.max_pages = new_data['max_pages'];

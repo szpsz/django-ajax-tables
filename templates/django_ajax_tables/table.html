@@ -74,7 +74,7 @@
 
         <tbody>
             <tr ng-repeat="row in rows"
-                ng-class="{{ row_ng_classes }}">
+                ng-class="{{ rows_ng_classes }}">
 
                 <td ng-repeat="column in row.content">
                     {$ column $}
@@ -82,7 +82,7 @@
                 {% if row_actions %}
                     <td>
                         {% for action in row_actions %}
-                            <span ng-click="action('{{ action.action_id}}', '{{ action.are_you_sure_question }}', row.model_id)">{{ action.html|safe }}</span>
+                            <span ng-click="action('{{ action.action_id}}', '{{ action.are_you_sure_question }}', row.model.id)">{{ action.html|safe }}</span>
                         {% endfor %}
                     </td>
                 {% endif %}

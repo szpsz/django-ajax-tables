@@ -1,7 +1,9 @@
 import json
+import traceback
 from uuid import uuid4
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.decorators.csrf import csrf_protect
@@ -79,7 +81,7 @@ class DjangoAjaxTable(object):
             "select_row_checkbox_classes": "big-checkbox",
             "selectable_rows": kwargs.get('selectable_rows', False),
             "action_for_selected": None,  # [{'classes':..., 'function':..., 'description': ..., }, ... ] see table.html
-            "row_ng_classes": '',  # {'paid': row.paid && row.type != 'LIST', 'not-paid': !row.paid && row.type != 'LIST'}
+            "rows_ng_classes": kwargs.get('rows_ng_classes', ''),  # {'paid': row.paid && row.type != 'LIST', 'not-paid': !row.paid && row.type != 'LIST'}
         }
 
         self.model = model
@@ -114,6 +116,13 @@ class DjangoAjaxTable(object):
                 return False
         return True
 
+    @classmethod
+    def skip_not_serializable_keys(cls, object):
+        object_table_evaluable = {k: getattr(object, k)() for k in dir(object) if 'table_evaluable' in k}
+        object_dict = object.__dict__
+        object_table_evaluable.update({k: v for k, v in object_dict.iteritems() if str(type(v)).split("'")[1] in ('str', 'unicode', 'int', 'long', 'float', 'bool', 'NoneType')})  # not nice check
+        return object_table_evaluable
+
     def get_ajax_response(self, page, filter, ordered_by):
         objects = self.model.objects.filter(**self.initial_filter)
 
@@ -144,7 +153,7 @@ class DjangoAjaxTable(object):
             page = paginator.num_pages if page != 0 else 1
             objects = paginator.page(page)
 
-        rows = [{'checked': False, 'model_id': object.id, 'content': [column.display(object) for column in self.columns]} for object in objects]
+        rows = [{'checked': False, 'model': self.skip_not_serializable_keys(object), 'content': [column.display(object) for column in self.columns]} for object in objects]
         return rows, page, paginator.num_pages
 
     @classmethod
@@ -164,10 +173,11 @@ class DjangoAjaxTable(object):
                 filter = content.get('filter', {})
                 ordered_by = content.get('ordered_by')
                 rows, page, max_pages = instance.get_ajax_response(page, filter, ordered_by)
-                response = {'rows': rows,
-                            'page': page,
-                            'max_pages': max_pages,
-                            }
+                response = {
+                    'rows': rows,
+                    'page': page,
+                    'max_pages': max_pages,
+                }
                 response = json.dumps(response)
                 return HttpResponse(response, content_type="application/json")
         raise PermissionDenied
