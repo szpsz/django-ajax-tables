@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
-from django.template import loader, Context
+from django.template import loader, Context, Template
 from django.views.decorators.csrf import csrf_protect
 from sekizai.context import SekizaiContext
 
@@ -19,10 +19,10 @@ class DjangoAjaxTableAction(object):
         self.are_you_sure_question = are_you_sure_question
         self.show_condition = show_condition
         if not render_template:
-            self.html = html
+            self.template = Template(html)
         else:
             template = loader.get_template(html)
-            self.html = template.render({})
+            self.template = template
 
     def action(self, request):
         self.security_function(request)
@@ -37,6 +37,10 @@ class DjangoAjaxTableAction(object):
     @staticmethod
     def get_content(request):
         return json.loads(request.body.decode('utf-8'))
+
+    @property
+    def html(self):
+        return self.template.render(Context({}))
 
 
 class DjangoAjaxTableColumn(object):
@@ -98,13 +102,15 @@ class DjangoAjaxTable(object):
         self.table_id = str(uuid4())
         self.tables[self.table_id] = self
         initial_args['ng_init'] = {'table_id': self.table_id}
-        template = loader.get_template('django_ajax_tables/table.html')
-        context = Context(initial_args)
-        context.update(SekizaiContext())
-        self.html = template.render(context)
-        self.sekizai_context = context['SEKIZAI_CONTENT_HOLDER']
+        self.template = loader.get_template('django_ajax_tables/table.html')
+        self.context = Context(initial_args)
+        self.context.update(SekizaiContext())
+        self.html = None
+        self.sekizai_context = self.context['SEKIZAI_CONTENT_HOLDER']
 
     def as_html(self):
+        if self.html is None:
+            self.html = self.template.render(self.context)
         return self.html
 
     def update_context(self):

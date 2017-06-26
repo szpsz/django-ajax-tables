@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse, NoReverseMatch
 from components.django_ajax_tables.table import DjangoAjaxTableAction
 
 
@@ -39,8 +40,14 @@ class RedirectToAction(DjangoAjaxTableAction):
         self.url = url
         super(self.__class__, self).__init__(html, lambda r: None, security_function, render_template, '', show_condition)
 
+    def get_url(self):
+        try:
+            return reverse(self.url)
+        except NoReverseMatch:
+            return self.url
+
     def function(self, request):
-        return 'window.location.href = "%s";' % self.url
+        return 'window.location.href = "%s";' % self.get_url()
 
 
 class RedirectWithIdAction(DjangoAjaxTableAction):
@@ -51,11 +58,19 @@ class RedirectWithIdAction(DjangoAjaxTableAction):
                  render_template=False,
                  show_condition=''
                  ):
-        self.url = url[:-1] if url[-1] == '/' else url
+        self.url = url
         super(self.__class__, self).__init__(html, lambda r: None, security_function, render_template, '', show_condition)
 
     def function(self, request):
-        return 'window.location.href = "%s/"+model_id;' % self.url
+        return 'window.location.href = "%s/"+model_id;' % self.get_url()
+
+    def get_url(self):
+        try:
+            url = reverse(self.url, args=('12345', ))
+            url = url[:url.index('12345')]
+        except NoReverseMatch:
+            url = self.url[:-1] if self.url[-1] == '/' else self.url
+        return url
 
 
 class HtmlOnlyAction(DjangoAjaxTableAction):
@@ -69,3 +84,8 @@ class HtmlOnlyAction(DjangoAjaxTableAction):
 
     def function(self, request):
         return None
+
+
+class BrBrAction(DjangoAjaxTableAction):
+    def __init__(self):
+        super(self.__class__, self).__init__('<br><br>', lambda r: None,)
