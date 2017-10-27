@@ -1,6 +1,8 @@
 import json
 import traceback
 from uuid import uuid4
+
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, FieldError
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms.models import model_to_dict
@@ -163,7 +165,6 @@ class DjangoAjaxTable(object):
             page = paginator.num_pages if page != 0 else 1
             objects = paginator.page(page)
 
-        print objects, type(objects)
         rows = [{'checked': False, 'model': self.skip_not_serializable_keys_or_excluded(object), 'content': [column.display(object) for column in self.columns]} for object in objects]
         return rows, page, paginator.num_pages
 
@@ -194,11 +195,13 @@ class DjangoAjaxTable(object):
         raise PermissionDenied
 
 
+@login_required
 @csrf_protect
 def get_rows(request):
     return DjangoAjaxTable.process_request(request)
 
 
+@login_required
 @csrf_protect
 def action(request):
     return DjangoAjaxTable.process_request(request, action=True)
