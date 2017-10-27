@@ -73,10 +73,10 @@
         </thead>
 
         <tbody>
-            <tr ng-repeat="row in rows"
+            <tr ng-repeat="row in rows track by $index"
                 ng-class="{{ rows_ng_classes }}">
 
-                <td ng-repeat="column in row.content">
+                <td ng-repeat="column in row.content track by $index">
                     {$ column $}
                 </td>
                 {% if row_actions %}

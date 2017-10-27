@@ -1,7 +1,7 @@
 import json
 import traceback
 from uuid import uuid4
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, FieldError
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -52,7 +52,10 @@ class DjangoAjaxTableColumn(object):
         self.header_classes = header_classes
 
     def display(self, instance):
-        return getattr(instance, self.model_field_name)
+        try:
+            return getattr(instance, self.model_field_name)
+        except:
+            print 'tu jest cos nie tak'
 
     def add_to_table(self, model):
         if self.column_header_name is None:
@@ -74,7 +77,8 @@ class DjangoAjaxTable(object):
     """
     tables = {}
 
-    def __init__(self, model, columns, table_actions=None, row_actions=None, **kwargs):
+    def __init__(self, model, columns, table_actions=None, row_actions=None, excluded=None, **kwargs):
+        self.excluded = excluded if excluded else []
         # TODO add check of kwargs for html shit
         self.objects_on_page = kwargs.get('objects_on_page', 20)  # TODO from settings
         self.initial_filter = kwargs.get('initial_filter', {})
@@ -100,7 +104,7 @@ class DjangoAjaxTable(object):
         initial_args['columns'] = columns
         self.ajax_security_function = kwargs.get('ajax_security_function')
         self.table_id = str(uuid4())
-        self.tables[self.table_id] = self
+        self.tables[self.table_id] = self  # add self to dict of table instance to find it when loading data dynamically
         initial_args['ng_init'] = {'table_id': self.table_id}
         self.template = loader.get_template('django_ajax_tables/table.html')
         self.context = Context(initial_args)
@@ -122,18 +126,17 @@ class DjangoAjaxTable(object):
                 return False
         return True
 
-    @classmethod
-    def skip_not_serializable_keys(cls, object):
+    def skip_not_serializable_keys_or_excluded(self, object):
         object_table_evaluable = {k: getattr(object, k)() for k in dir(object) if 'table_evaluable' in k}
         object_dict = object.__dict__
-        object_table_evaluable.update({k: v for k, v in object_dict.iteritems() if str(type(v)).split("'")[1] in ('str', 'unicode', 'int', 'long', 'float', 'bool', 'NoneType')})  # not nice check
+        object_table_evaluable.update({k: v for k, v in object_dict.iteritems() if k not in self.excluded and str(type(v)).split("'")[1] in ('str', 'unicode', 'int', 'long', 'float', 'bool', 'NoneType')})  # not nice check
         return object_table_evaluable
 
     def get_ajax_response(self, page, filter, ordered_by):
         objects = self.model.objects.filter(**self.initial_filter)
-
+        # if order by model field use order_by django model function for efficiency, if not load all objects from db and order using sorted :(
         if ordered_by:
-            if any(True if f.name in ordered_by else False for f in self.model._meta.get_fields()):  # I know what i'am doing...
+            if any(True if f.name == ordered_by or f.name == ordered_by[1:] else False for f in self.model._meta.get_fields()):  # I know what i'am doing...
                 objects = objects.order_by(ordered_by)
             else:
                 if ordered_by[0] == '-':
@@ -141,10 +144,11 @@ class DjangoAjaxTable(object):
                 else:
                     objects = sorted(objects, key=lambda m: getattr(m, ordered_by), reverse=False)
 
+        # if filter by model field use filter django model function for efficiency, if not load all objects from db and filter using list comprehension :(
         filter = dict((k, v) for k, v in filter.iteritems() if v)
         if filter:
-            if all(any(True if f.name in single_filter else False for f in self.model._meta.get_fields()) for single_filter in filter.iterkeys()):  # I know what i'am doing...
-                filter = dict((k.split('_filter')[0]+'__icontains', v) for k, v in filter.iteritems())
+            if all(any(True if f.name == single_filter.split('_filter')[0] else False for f in self.model._meta.get_fields()) for single_filter in filter.iterkeys()):  # I know what i'am doing...
+                filter = dict((k.split('_filter')[0] + '__icontains', v) for k, v in filter.iteritems())
                 objects = objects.filter(**filter)
             else:
                 objects = [object for object in objects if self.filter_row(object, filter)]
@@ -159,7 +163,8 @@ class DjangoAjaxTable(object):
             page = paginator.num_pages if page != 0 else 1
             objects = paginator.page(page)
 
-        rows = [{'checked': False, 'model': self.skip_not_serializable_keys(object), 'content': [column.display(object) for column in self.columns]} for object in objects]
+        print objects, type(objects)
+        rows = [{'checked': False, 'model': self.skip_not_serializable_keys_or_excluded(object), 'content': [column.display(object) for column in self.columns]} for object in objects]
         return rows, page, paginator.num_pages
 
     @classmethod

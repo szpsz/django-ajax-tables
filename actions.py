@@ -69,7 +69,8 @@ class RedirectWithIdAction(DjangoAjaxTableAction):
             url = reverse(self.url, args=('12345', ))
             url = url[:url.index('12345')]
         except NoReverseMatch:
-            url = self.url[:-1] if self.url[-1] == '/' else self.url
+            url = self.url
+        url = url[:-1] if url[-1] == '/' else url
         return url
 
 
