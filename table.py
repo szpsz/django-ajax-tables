@@ -1,10 +1,12 @@
 import json
 import traceback
+import types
 from uuid import uuid4
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, FieldError
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models.query_utils import Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.template import loader, Context, Template
@@ -134,8 +136,14 @@ class DjangoAjaxTable(object):
         object_table_evaluable.update({k: v for k, v in object_dict.iteritems() if k not in self.excluded and str(type(v)).split("'")[1] in ('str', 'unicode', 'int', 'long', 'float', 'bool', 'NoneType')})  # not nice check
         return object_table_evaluable
 
-    def get_ajax_response(self, page, filter, ordered_by):
-        objects = self.model.objects.filter(**self.initial_filter)
+    def get_ajax_response(self, page, filter, ordered_by, request):
+        if isinstance(self.initial_filter, types.FunctionType):  # filter function must take request and returns Q object
+            objects = self.model.objects.filter(self.initial_filter(request))
+        elif isinstance(self.initial_filter, Q):
+            objects = self.model.objects.filter(self.initial_filter)
+        else:
+            objects = self.model.objects.filter(**self.initial_filter)
+
         # if order by model field use order_by django model function for efficiency, if not load all objects from db and order using sorted :(
         if ordered_by:
             if any(True if f.name == ordered_by or f.name == ordered_by[1:] else False for f in self.model._meta.get_fields()):  # I know what i'am doing...
@@ -184,7 +192,7 @@ class DjangoAjaxTable(object):
                 page = content.get('page', 1)
                 filter = content.get('filter', {})
                 ordered_by = content.get('ordered_by')
-                rows, page, max_pages = instance.get_ajax_response(page, filter, ordered_by)
+                rows, page, max_pages = instance.get_ajax_response(page, filter, ordered_by, request)
                 response = {
                     'rows': rows,
                     'page': page,
