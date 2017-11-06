@@ -69,7 +69,6 @@ class RedirectWithIdAction(DjangoAjaxTableAction):
         else:
             return 'window.open("%s/"+model_id).focus();' % self.get_url()
 
-
     def get_url(self):
         try:
             url = reverse(self.url, args=('12345', ))
