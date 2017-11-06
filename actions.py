@@ -56,13 +56,19 @@ class RedirectWithIdAction(DjangoAjaxTableAction):
                  html='<button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-share" aria-hidden="true" title="go to"></span></button>',
                  security_function=lambda r: None,
                  render_template=False,
-                 show_condition=''
+                 show_condition='',
+                 new_tab=False,
                  ):
+        self.new_tab = new_tab
         self.url = url
         super(self.__class__, self).__init__(html, lambda r: None, security_function, render_template, '', show_condition)
 
     def function(self, request):
-        return 'window.location.href = "%s/"+model_id;' % self.get_url()
+        if not self.new_tab:
+            return 'window.location.href = "%s/"+model_id;' % self.get_url()
+        else:
+            return 'window.open("%s/"+model_id).focus();' % self.get_url()
+
 
     def get_url(self):
         try:

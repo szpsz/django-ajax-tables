@@ -126,7 +126,7 @@ class DjangoAjaxTable(object):
 
     def filter_row(self, object, filter):
         for column in self.columns:
-            if column.filterable and (column.model_field_name + '_filter' in filter) and not filter[column.model_field_name + '_filter'] in column.display(object):
+            if column.filterable and (column.model_field_name + '_filter' in filter) and not filter[column.model_field_name + '_filter'].lower() in column.display(object).lower():
                 return False
         return True
 
