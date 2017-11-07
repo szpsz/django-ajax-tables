@@ -76,6 +76,7 @@ djangoAjaxTablesApp.controller('djangoAjaxTablesController', function ($scope, d
             $scope.rows = new_data['rows'];
             $scope.page = new_data['page'];
             $scope.max_pages = new_data['max_pages'];
+            $scope.check_all_value = false;
         });
     };
 

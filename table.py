@@ -173,7 +173,7 @@ class DjangoAjaxTable(object):
             page = paginator.num_pages if page != 0 else 1
             objects = paginator.page(page)
 
-        rows = [{'checked': False, 'model': self.skip_not_serializable_keys_or_excluded(object), 'content': [column.display(object) for column in self.columns]} for object in objects]
+        rows = [{'model_id': object.pk, 'checked': False, 'model': self.skip_not_serializable_keys_or_excluded(object), 'content': [column.display(object) for column in self.columns]} for object in objects]
         return rows, page, paginator.num_pages
 
     @classmethod
