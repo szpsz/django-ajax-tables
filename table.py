@@ -85,6 +85,7 @@ class DjangoAjaxTable(object):
         self.excluded = excluded if excluded else []
         # TODO add check of kwargs for html shit
         self.objects_on_page = kwargs.get('objects_on_page', 20)  # TODO from settings
+        self.initial_order_by = kwargs.get('initial_order_by', None)
         self.initial_filter = kwargs.get('initial_filter', {})
         initial_args = {
             "additional_before_table": '<div class="col-md-12"><div class="panel panel-default"><div class="panel-heading">%s</div><div class="panel-body">' % kwargs.get('table_name', ''),
@@ -145,6 +146,7 @@ class DjangoAjaxTable(object):
             objects = self.model.objects.filter(**self.initial_filter)
 
         # if order by model field use order_by django model function for efficiency, if not load all objects from db and order using sorted :(
+        ordered_by = ordered_by if ordered_by else self.initial_order_by
         if ordered_by:
             if any(True if f.name == ordered_by or f.name == ordered_by[1:] else False for f in self.model._meta.get_fields()):  # I know what i'am doing...
                 objects = objects.order_by(ordered_by)
